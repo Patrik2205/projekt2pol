@@ -42,13 +42,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } } // Fix here
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
-    const id = parseInt(params.id, 10)
+    const { id } = await params
+    const parsedId = parseInt(id, 10)
     
     if (!session?.user) {
       return NextResponse.json(
@@ -58,7 +56,7 @@ export async function PUT(
     }
 
     const comment = await prisma.comment.findUnique({
-      where: { id },
+      where: { id: parsedId },
       select: { userId: true }
     })
 
@@ -87,7 +85,7 @@ export async function PUT(
     }
 
     const updatedComment = await prisma.comment.update({
-      where: { id },
+      where: { id: parsedId },
       data: {
         content,
         updatedAt: new Date()
@@ -110,13 +108,12 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } } // Fix here
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> } // Fix here
 ) {
   try {
     const session = await getServerSession(authOptions)
-    const id = parseInt(params.id, 10)
+    const { id } = await params
+    const parsedId = parseInt(id, 10)
     
     if (!session?.user) {
       return NextResponse.json(
@@ -126,7 +123,7 @@ export async function DELETE(
     }
 
     const comment = await prisma.comment.findUnique({
-      where: { id },
+      where: { id: parsedId },
       select: { userId: true }
     })
 
@@ -145,7 +142,7 @@ export async function DELETE(
     }
 
     await prisma.comment.delete({
-      where: { id }
+      where: { id: parsedId }
     })
 
     return NextResponse.json(
