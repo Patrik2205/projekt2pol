@@ -1,12 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/app/api/lib/prisma'
-import { getSession } from 'next-auth/react'
-
-type RouteParams = { params: { id: string } }
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/app/api/auth/auth.config"
 
 export async function GET(
-  request: Request,
-  { params }: RouteParams
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
     const id = parseInt(params.id)
@@ -46,11 +45,11 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request,
-  { params }: RouteParams
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getSession()
+    const session = await getServerSession(authOptions)
     const id = parseInt(params.id)
     
     if (!session?.user) {
@@ -114,11 +113,11 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: RouteParams
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getSession()
+    const session = await getServerSession(authOptions)
     const id = parseInt(params.id)
     
     if (!session?.user) {
