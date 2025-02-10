@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(params.id)
+    const id = parseInt(params.id, 10)
 
     const comment = await prisma.comment.findUnique({
       where: { id },
@@ -46,11 +46,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } } // Fix here
 ) {
   try {
     const session = await getServerSession(authOptions)
-    const id = parseInt(params.id)
+    const id = parseInt(params.id, 10)
     
     if (!session?.user) {
       return NextResponse.json(
@@ -71,7 +71,7 @@ export async function PUT(
       )
     }
 
-    if (comment.userId !== parseInt(session.user.id)) {
+    if (comment.userId !== parseInt(session.user.id, 10)) {
       return NextResponse.json(
         { error: 'Not authorized to update this comment' },
         { status: 403 }
@@ -114,11 +114,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } } // Fix here
 ) {
   try {
     const session = await getServerSession(authOptions)
-    const id = parseInt(params.id)
+    const id = parseInt(params.id, 10)
     
     if (!session?.user) {
       return NextResponse.json(
@@ -139,7 +139,7 @@ export async function DELETE(
       )
     }
 
-    if (comment.userId !== parseInt(session.user.id)) {
+    if (comment.userId !== parseInt(session.user.id, 10)) {
       return NextResponse.json(
         { error: 'Not authorized to delete this comment' },
         { status: 403 }
