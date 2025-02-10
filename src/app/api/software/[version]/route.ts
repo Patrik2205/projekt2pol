@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/app/api/lib/prisma'
 
-export async function GET(request: Request, { params }: { params: { version: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ version: string }> }) {
   try {
     const version = await prisma.softwareVersion.findFirst({
       where: {
-        versionNumber: params.version
+        versionNumber: (await params).version
       },
       include: {
         releasePost: true,

@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/app/api/lib/prisma'
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id)
+    const { id } = await params
+    const parsedId = parseInt(id, 10)
+
     const doc = await prisma.documentationSection.findUnique({
-      where: { id },
+      where: { id: parsedId },
       include: {
         subSections: true,
         parentSection: true
@@ -31,17 +30,16 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id)
+    const { id } = await params
+    const parsedId = parseInt(id, 10)
+    
     const json = await request.json()
     const { title, content, parentSectionId, orderIndex } = json
 
     const doc = await prisma.documentationSection.update({
-      where: { id },
+      where: { id: parsedId },
       data: {
         title,
         content,
@@ -60,14 +58,13 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id)
+    const { id } = await params
+    const parsedId = parseInt(id, 10)
+    
     await prisma.documentationSection.delete({
-      where: { id }
+      where: { id: parsedId }
     })
 
     return NextResponse.json({ message: 'Documentation section deleted successfully' })

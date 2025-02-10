@@ -3,14 +3,13 @@ import { prisma } from '@/app/api/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/auth.config"
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id)
+    const { id } = await params;
+    const postId = parseInt(id, 10);
+
     const post = await prisma.post.findUnique({
-      where: { id },
+      where: { id: postId },
       include: {
         author: {
           select: {
@@ -51,10 +50,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
@@ -64,9 +60,11 @@ export async function PUT(
       )
     }
 
-    const id = parseInt(params.id)
+    const { id } = await params;
+    const postId = parseInt(id, 10);
+
     const post = await prisma.post.findUnique({
-      where: { id },
+      where: { id: postId },
       select: { authorId: true }
     })
 
@@ -88,7 +86,7 @@ export async function PUT(
     const { title, content, tags } = json
 
     const updatedPost = await prisma.post.update({
-      where: { id },
+      where: { id: postId },
       data: {
         title,
         content,
@@ -120,10 +118,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
@@ -133,9 +128,11 @@ export async function DELETE(
       )
     }
 
-    const id = parseInt(params.id)
+    const { id } = await params;
+    const postId = parseInt(id, 10);
+
     const post = await prisma.post.findUnique({
-      where: { id },
+      where: { id: postId },
       select: { authorId: true }
     })
 
@@ -154,7 +151,7 @@ export async function DELETE(
     }
 
     await prisma.post.delete({
-      where: { id }
+      where: { id: postId }
     })
 
     return NextResponse.json({ message: 'Post deleted successfully' })
