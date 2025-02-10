@@ -3,15 +3,13 @@ import { prisma } from '@/app/api/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/api/auth/auth.config"
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id, 10)
+    const { id } = await params
+    const parsedId = parseInt(id, 10)
 
     const comment = await prisma.comment.findUnique({
-      where: { id },
+      where: { id: parsedId },
       include: {
         user: {
           select: {
