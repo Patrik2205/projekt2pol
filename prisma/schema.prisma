@@ -1,0 +1,153 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  username      String    @unique
+  email         String    @unique
+  passwordHash  String
+  firstName     String?
+  lastName      String?
+  createdAt     DateTime  @default(now())
+  lastLogin     DateTime?
+  isAdmin       Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  posts         Post[]
+  comments      Comment[]
+  downloads     DownloadStatistic[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    Int
+  title       String
+  content     String
+  postType    PostType
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+  isPublished Boolean   @default(false)
+  slug        String    @unique
+  comments    Comment[]
+  tags        PostTag[]
+  softwareVersion SoftwareVersion?
+}
+
+enum PostType {
+  blogPost
+  newRelease
+}
+
+model SoftwareVersion {
+  id                  Int       @id @default(autoincrement())
+  versionNumber      String
+  releasePost        Post      @relation(fields: [releasePostId], references: [id])
+  releasePostId      Int       @unique
+  downloadUrl        String
+  checksum          String
+  sizeBytes         BigInt
+  releaseDate       DateTime   @default(now())
+  isLatest          Boolean    @default(false)
+  minRequirements   String?
+  changelog         String?
+  downloads         DownloadStatistic[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isApproved Boolean @default(false)
+}
+
+model Tag {
+  id    Int       @id @default(autoincrement())
+  name  String    @unique
+  slug  String    @unique
+  posts PostTag[]
+}
+
+model PostTag {
+  post    Post     @relation(fields: [postId], references: [id])
+  postId  Int
+  tag     Tag      @relation(fields: [tagId], references: [id])
+  tagId   Int
+
+  @@id([postId, tagId])
+}
+
+model DocumentationSection {
+  id              Int       @id @default(autoincrement())
+  title           String
+  content         String
+  parentSection   DocumentationSection?  @relation("SectionHierarchy", fields: [parentSectionId], references: [id])
+  parentSectionId Int?
+  subSections     DocumentationSection[] @relation("SectionHierarchy")
+  orderIndex      Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  slug            String    @unique
+}
+
+model DownloadStatistic {
+  id          Int             @id @default(autoincrement())
+  version     SoftwareVersion @relation(fields: [versionId], references: [id])
+  versionId   Int
+  user        User?           @relation(fields: [userId], references: [id])
+  userId      Int?
+  downloadDate DateTime       @default(now())
+  ipAddress   String?
+  userAgent   String?
+  osType      String?
+  countryCode String?         @db.VarChar(2)
+}
