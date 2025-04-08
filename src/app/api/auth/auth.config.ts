@@ -2,8 +2,6 @@ import { AuthOptions, Session } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/app/api/lib/prisma"
 import CredentialsProvider from "next-auth/providers/credentials"
-import GoogleProvider from "next-auth/providers/google"
-import GitHubProvider from "next-auth/providers/github"
 import bcrypt from "bcrypt"
 
 declare module "next-auth" {
@@ -20,14 +18,6 @@ declare module "next-auth" {
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    GitHubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -70,15 +60,6 @@ export const authOptions: AuthOptions = {
     error: '/auth/error',
   },
   callbacks: {
-    async signIn({ user }) {
-      if (user.id) {
-        await prisma.user.update({
-          where: { id: parseInt(user.id) },
-          data: { lastLogin: new Date() }
-        })
-      }
-      return true
-    },
     async session({ session, token }) {
       if (session.user) {
         if (token.sub) {

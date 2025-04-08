@@ -6,34 +6,30 @@ import { authOptions } from "@/app/api/auth/auth.config"
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const type = searchParams.get('type')
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '5')
-    const skip = (page - 1) * limit
+    const postType = searchParams.get('type')
 
     const posts = await prisma.post.findMany({
-      where: {
-        ...(type ? { postType: type as 'blogPost' | 'newRelease' } : {}),
-        isPublished: true
-      },
+      where: postType ? { postType: postType as 'blogPost' | 'newRelease' } : {},
       include: {
         author: {
           select: {
             username: true,
             email: true
           }
+        },
+        tags: {
+          include: {
+            tag: true
+          }
         }
       },
       orderBy: {
         createdAt: 'desc'
-      },
-      skip,
-      take: limit
+      }
     })
 
     return NextResponse.json(posts)
   } catch (error) {
-    console.error('Failed to fetch posts:', error)
     return NextResponse.json(
       { error: 'Failed to fetch posts' },
       { status: 500 }
