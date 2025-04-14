@@ -66,7 +66,8 @@ export default function BlogPost() {
         setIsLoading(true)
         setError(null)
         
-        const response = await fetch(`/api/posts/${params.slug}`)
+        // Use the new API endpoint that handles slugs
+        const response = await fetch(`/api/posts/by-slug/${params.slug}`)
         
         if (!response.ok) {
           const errorData = await response.json()
