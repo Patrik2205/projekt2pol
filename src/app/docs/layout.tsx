@@ -2,6 +2,19 @@ import DocsHeader from '@/components/docs/DocsHeader'
 import DocsSidebar from '@/components/docs/DocsSidebar'
 import { prisma } from '@/app/api/lib/prisma'
 
+// Match the type with DocsSidebar component
+type DocumentationSection = {
+  id: number
+  title: string
+  slug: string
+  content: string
+  parentSectionId: number | null
+  orderIndex: number
+  createdAt: Date
+  updatedAt: Date
+  subSections?: DocumentationSection[]
+}
+
 async function getDocSections() {
   const sections = await prisma.documentationSection.findMany({
     where: {
@@ -39,4 +52,4 @@ export default async function DocsLayout({
       </main>
     </div>
   )
-} 
+}

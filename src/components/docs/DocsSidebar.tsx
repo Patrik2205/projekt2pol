@@ -8,16 +8,29 @@ type Section = {
   id: number
   title: string
   slug: string
-  subSections: Section[]
+  subSections: Section[]  // This needs to be updated
+}
+
+// Create a more flexible type that matches what Prisma returns
+type DocumentationSection = {
+  id: number
+  title: string
+  slug: string
+  content: string
+  parentSectionId: number | null
+  orderIndex: number
+  createdAt: Date
+  updatedAt: Date
+  subSections?: DocumentationSection[]
 }
 
 type DocsSidebarProps = {
-  sections: Section[]
+  sections: DocumentationSection[]  // Updated prop type
 }
 
-function SectionItem({ section, level = 0 }: { section: Section, level?: number }) {
+function SectionItem({ section, level = 0 }: { section: DocumentationSection, level?: number }) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const hasSubSections = section.subSections.length > 0
+  const hasSubSections = section.subSections && section.subSections.length > 0
   const router = useRouter()
 
   const handleClick = (e: React.MouseEvent) => {
@@ -52,7 +65,7 @@ function SectionItem({ section, level = 0 }: { section: Section, level?: number 
         </a>
       </div>
       
-      {isExpanded && hasSubSections && (
+      {isExpanded && hasSubSections && section.subSections && (
         <div className="ml-4">
           {section.subSections.map(subSection => (
             <SectionItem 
@@ -80,4 +93,4 @@ export default function DocsSidebar({ sections }: DocsSidebarProps) {
       </div>
     </nav>
   )
-} 
+}
