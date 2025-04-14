@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-50 dark:bg-gray-900">
@@ -7,14 +9,14 @@ export default function Footer() {
             <h3 className="text-sm font-semibold uppercase tracking-wider">Product</h3>
             <ul className="mt-4 space-y-4">
               <li>
-                <a href="/features" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
+                <Link href="/features" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
                   Features
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/download" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
+                <Link href="/download" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
                   Download
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -23,14 +25,14 @@ export default function Footer() {
             <h3 className="text-sm font-semibold uppercase tracking-wider">Support</h3>
             <ul className="mt-4 space-y-4">
               <li>
-                <a href="/docs" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
+                <Link href="/docs" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
                   Documentation
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
+                <Link href="/contact" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
                   Contacts
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -39,14 +41,14 @@ export default function Footer() {
             <h3 className="text-sm font-semibold uppercase tracking-wider">Company</h3>
             <ul className="mt-4 space-y-4">
               <li>
-                <a href="/about" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
+                <Link href="/about" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/blog" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
+                <Link href="/blog" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
                   Blog
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -55,14 +57,14 @@ export default function Footer() {
             <h3 className="text-sm font-semibold uppercase tracking-wider">Legal</h3>
             <ul className="mt-4 space-y-4">
               <li>
-                <a href="/privacy" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
+                <Link href="/privacy" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
                   Privacy policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
+                <Link href="/terms" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300">
                   Terms of use
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

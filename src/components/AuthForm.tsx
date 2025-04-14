@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface AuthFormProps {
   mode: 'signin' | 'signup'
@@ -57,7 +58,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             onClick={() => signIn('google')}
             className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            <img src="/google.svg" alt="Google" className="h-5 w-5 mr-2" />
+            <Image src="/google.svg" alt="Google" className="h-5 w-5 mr-2" />
             Continue with Google
           </button>
           
@@ -65,7 +66,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             onClick={() => signIn('github')}
             className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            <img src="/github.svg" alt="GitHub" className="h-5 w-5 mr-2" />
+            <Image src="/github.svg" alt="GitHub" className="h-5 w-5 mr-2" />
             Continue with GitHub
           </button>
         </div>
