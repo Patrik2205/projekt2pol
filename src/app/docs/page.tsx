@@ -7,8 +7,7 @@ import rehypeRaw from 'rehype-raw'
 import rehypeStringify from 'rehype-stringify'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeHighlight from 'rehype-highlight'
-import 'highlight.js/styles/github-dark.css'
-import { ReactElement } from 'react'
+import 'highlight.js/styles/github-dark.css' // Import a syntax highlighting theme
 
 interface DocumentationSection {
   id: number;
@@ -56,16 +55,20 @@ async function markdownToHtml(markdown: string): Promise<string> {
   return result.toString();
 }
 
-interface DocsPageProps {
-  searchParams: { 
-    section?: string 
-  };
-}
-
+// Remove the custom interface and use the correct param type
 export default async function DocsPage({ 
   searchParams 
-}: DocsPageProps): Promise<ReactElement> {
-  const content = await getDocContent(searchParams.section);
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  // Handle the section parameter properly
+  const sectionParam = typeof searchParams.section === 'string' 
+    ? searchParams.section 
+    : Array.isArray(searchParams.section) 
+      ? searchParams.section[0] 
+      : undefined;
+      
+  const content = await getDocContent(sectionParam);
   
   let htmlContent = '';
   if (content?.content) {
