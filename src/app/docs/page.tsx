@@ -7,7 +7,8 @@ import rehypeRaw from 'rehype-raw'
 import rehypeStringify from 'rehype-stringify'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeHighlight from 'rehype-highlight'
-import 'highlight.js/styles/github-dark.css' // Import a syntax highlighting theme
+// Remove the problematic import
+// import 'highlight.js/styles/github-dark.css'
 
 interface DocumentationSection {
   id: number;
@@ -20,7 +21,7 @@ interface DocumentationSection {
   updatedAt: Date;
 }
 
-async function getDocContent(slug?: string): Promise<DocumentationSection | null> {
+async function getDocContent(slug?: string | undefined): Promise<DocumentationSection | null> {
   if (slug) {
     return await prisma.documentationSection.findFirst({
       where: {
@@ -55,17 +56,20 @@ async function markdownToHtml(markdown: string): Promise<string> {
   return result.toString();
 }
 
-// Remove the custom interface and use the correct param type
+// Use the correct param type with Promise
 export default async function DocsPage({ 
   searchParams 
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  // Await the searchParams Promise before using it
+  const resolvedParams = await searchParams;
+  
   // Handle the section parameter properly
-  const sectionParam = typeof searchParams.section === 'string' 
-    ? searchParams.section 
-    : Array.isArray(searchParams.section) 
-      ? searchParams.section[0] 
+  const sectionParam = typeof resolvedParams.section === 'string' 
+    ? resolvedParams.section 
+    : Array.isArray(resolvedParams.section) 
+      ? resolvedParams.section[0] 
       : undefined;
       
   const content = await getDocContent(sectionParam);
