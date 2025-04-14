@@ -7,13 +7,10 @@ export default function Features() {
       <Header />
 
       <main className="flex-grow pt-24">
-        {/* Features sekce */}
         <div className="py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-32">
-            {/* Feature 1 */}
             <div className="space-y-8">
               <div className="aspect-[16/9] w-full bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden">
-                {/* Zde bude obrázek feature */}
                 <div className="w-full h-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20" />
               </div>
               <div className="text-center max-w-3xl mx-auto">
@@ -26,7 +23,6 @@ export default function Features() {
               </div>
             </div>
 
-            {/* Feature 2 */}
             <div className="space-y-8">
               <div className="aspect-[16/9] w-full bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden">
                 <div className="w-full h-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20" />
@@ -40,7 +36,6 @@ export default function Features() {
               </div>
             </div>
 
-            {/* Feature 3 */}
             <div className="space-y-8">
               <div className="aspect-[16/9] w-full bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden">
                 <div className="w-full h-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20" />
@@ -54,7 +49,6 @@ export default function Features() {
               </div>
             </div>
 
-            {/* Feature 4 */}
             <div className="space-y-8">
               <div className="aspect-[16/9] w-full bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden">
                 <div className="w-full h-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20" />

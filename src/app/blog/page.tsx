@@ -27,8 +27,7 @@ export default function Blog() {
 
   const fetchPosts = async () => {
     try {
-      const postType = filter === 'updates' ? 'newRelease' : 
-                      filter === 'other' ? 'blogPost' : ''
+      const postType = filter === 'updates' ? 'newRelease' : filter === 'other' ? 'blogPost' : ''
                       
       const response = await fetch(`/api/posts?type=${postType}&page=${page}&limit=${postsPerPage}`)
       

@@ -9,7 +9,6 @@ export async function GET(request: Request) {
     let section;
     
     if (slug) {
-      // Fetch specific section by slug
       section = await prisma.documentationSection.findFirst({
         where: {
           slug: slug
@@ -23,7 +22,6 @@ export async function GET(request: Request) {
         );
       }
     } else {
-      // Fetch default section (first one)
       section = await prisma.documentationSection.findFirst({
         where: {
           parentSectionId: null

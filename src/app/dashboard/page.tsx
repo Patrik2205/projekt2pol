@@ -116,7 +116,6 @@ export default function Dashboard() {
               <>
                 <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
 
-                {/* Stats Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -137,7 +136,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Recent Activity */}
                 <section className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
                   <p className="text-gray-600 dark:text-gray-400">
@@ -152,7 +150,6 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-bold mb-8">Your Posts</h1>
                 
                 <div className="space-y-8">
-                  {/* Blog Posts Section - pouze pro adminy */}
                   {isAdmin && (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                       <h2 className="text-2xl font-bold mb-4">Your Blog Posts</h2>
@@ -184,7 +181,6 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {/* Forum Posts Section */}
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <h2 className="text-2xl font-bold mb-4">Your Forum Posts</h2>
                     <p className="text-gray-600 dark:text-gray-400">
@@ -200,7 +196,6 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-bold mb-8">Comments</h1>
                 
                 <div className="space-y-8">
-                  {/* User's Comments */}
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <h2 className="text-2xl font-bold mb-4">Your Comments</h2>
                     <p className="text-gray-600 dark:text-gray-400">
@@ -208,7 +203,6 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  {/* Comments on User's Posts */}
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <h2 className="text-2xl font-bold mb-4">Comments on Your Posts</h2>
                     <p className="text-gray-600 dark:text-gray-400">
@@ -269,7 +263,6 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                {/* Information Boxes */}
                 <div className="space-y-4 max-w-2xl mx-auto">
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                     <div className="flex items-center justify-between">

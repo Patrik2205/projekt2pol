@@ -50,7 +50,6 @@ export default function DocContent() {
     async function fetchContent() {
       setIsLoading(true);
       try {
-        // Fetch content based on slug
         const apiUrl = sectionSlug 
           ? `/api/docs/section?slug=${encodeURIComponent(sectionSlug)}`
           : '/api/docs/section';

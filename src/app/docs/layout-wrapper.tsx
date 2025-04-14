@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import DocsHeader from '@/components/docs/DocsHeader'
 
-// This would be a simple wrapper for the DocsHeader to handle Suspense separately
 export default function DocsHeaderWrapper() {
   return (
     <Suspense fallback={

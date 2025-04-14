@@ -8,7 +8,7 @@ export async function GET() {
         subSections: true
       },
       where: {
-        parentSectionId: null // Only get root level docs
+        parentSectionId: null
       },
       orderBy: {
         orderIndex: 'asc'

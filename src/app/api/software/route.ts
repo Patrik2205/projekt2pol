@@ -8,7 +8,7 @@ export async function GET() {
     const versions = await prisma.softwareVersion.findMany({
         include: {
           releasePost: true,
-          downloads: true, // Changed from {select: {count: true}}
+          downloads: true,
           _count: {
             select: {
               downloads: true

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-// Import the Markdown processing libraries
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
@@ -13,7 +12,7 @@ import rehypeRaw from 'rehype-raw'
 import rehypeStringify from 'rehype-stringify'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeHighlight from 'rehype-highlight'
-import 'highlight.js/styles/github-dark.css' // Import a syntax highlighting theme
+import 'highlight.js/styles/github-dark.css'
 
 type PostType = 'blogPost' | 'newRelease'
 
@@ -32,7 +31,6 @@ type Post = {
   }
 }
 
-// Function to convert markdown to HTML - identical to documentation implementation
 async function markdownToHtml(markdown: string): Promise<string> {
   const result = await unified()
     .use(remarkParse)
@@ -66,7 +64,6 @@ export default function BlogPost() {
         setIsLoading(true)
         setError(null)
         
-        // Use the new API endpoint that handles slugs
         const response = await fetch(`/api/posts/by-slug/${params.slug}`)
         
         if (!response.ok) {
@@ -77,7 +74,6 @@ export default function BlogPost() {
         const data = await response.json()
         setPost(data)
         
-        // Process markdown content after fetching the post
         if (data.content) {
           try {
             const processedContent = await markdownToHtml(data.content)
@@ -132,17 +128,14 @@ export default function BlogPost() {
       
       <main className="flex-grow pt-16">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          {/* Post Image */}
           <div className="w-full h-[400px] bg-gray-200 dark:bg-gray-700 overflow-hidden mb-8 rounded-bl-lg rounded-br-lg">
             <div className="w-full h-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20" />
           </div>
 
-          {/* Post Title */}
           <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             {post.title}
           </h1>
 
-          {/* Post Metadata */}
           <div className="flex flex-wrap gap-x-6 text-sm text-gray-600 dark:text-gray-400 mb-8">
             <p>By {post.author.username}</p>
             <p>Published: {new Date(post.createdAt).toLocaleDateString()}</p>
@@ -151,7 +144,6 @@ export default function BlogPost() {
             )}
           </div>
 
-          {/* Post Content - now with Markdown rendering */}
           <div 
             className="prose prose-lg dark:prose-invert max-w-none markdown-content"
             dangerouslySetInnerHTML={{ __html: htmlContent }}

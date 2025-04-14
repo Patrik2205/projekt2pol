@@ -11,7 +11,6 @@ export default function Header() {
     <header className="fixed top-0 w-full bg-background/80 backdrop-blur-md z-50 border-b border-black/[.1] dark:border-white/[.1]">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center">
-          {/* Logo a název - fixní šířka */}
           <div className="w-48">
             <Link href="/" className="flex items-center space-x-2">
               <Image src="/logo.svg" alt="Logo" width={40} height={40} />
@@ -19,7 +18,6 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Navigační odkazy - centrované */}
           <div className="flex-1 hidden md:flex items-center justify-center space-x-8">
             <Link href="/features" className="text-sm hover:text-gray-600 dark:hover:text-gray-300">
               Features
@@ -40,7 +38,6 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Sign In tlačítko - fixní šířka */}
           <div className="flex gap-2 justify-end">
             {session ? (
               <>

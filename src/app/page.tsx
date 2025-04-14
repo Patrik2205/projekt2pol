@@ -8,11 +8,9 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      {/* Hero sekce - upravená výška na menší */}
       <main className="flex-grow">
         <div className="min-h-[56vh] relative flex items-center justify-center px-4 sm:px-6 lg:px-8">
           <div className="absolute inset-0 overflow-hidden">
-            {/* Volitelné: Gradient nebo pozadí */}
             <div className="absolute inset-0 bg-gradient-to-b from-background to-background/50" />
           </div>
           
@@ -42,14 +40,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Features sekce */}
         <div className="py-16 pb-[200px]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Feature 1 - Obrázek vlevo */}
             <div className="flex flex-col md:flex-row items-center gap-8 mb-64">
               <div className="w-full md:w-1/2">
                 <div className="aspect-video bg-gray-200 dark:bg-gray-800 rounded-lg w-full">
-                  {/* Placeholder pro obrázek feature */}
                 </div>
               </div>
               <div className="w-full md:w-1/2 md:pl-8">
@@ -61,11 +56,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Feature 2 - Obrázek vpravo */}
             <div className="flex flex-col md:flex-row-reverse items-center gap-8 mb-64">
               <div className="w-full md:w-1/2">
                 <div className="aspect-video bg-gray-200 dark:bg-gray-800 rounded-lg w-full">
-                  {/* Placeholder pro obrázek feature */}
                 </div>
               </div>
               <div className="w-full md:w-1/2 md:pr-8">
@@ -77,11 +70,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Feature 3 - Obrázek vlevo */}
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="w-full md:w-1/2">
                 <div className="aspect-video bg-gray-200 dark:bg-gray-800 rounded-lg w-full">
-                  {/* Placeholder pro obrázek feature */}
                 </div>
               </div>
               <div className="w-full md:w-1/2 md:pl-8">
