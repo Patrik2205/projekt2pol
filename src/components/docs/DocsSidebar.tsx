@@ -1,17 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 
-type Section = {
-  id: number
-  title: string
-  slug: string
-  subSections: Section[]  // This needs to be updated
-}
-
-// Create a more flexible type that matches what Prisma returns
 type DocumentationSection = {
   id: number
   title: string
@@ -25,13 +16,18 @@ type DocumentationSection = {
 }
 
 type DocsSidebarProps = {
-  sections: DocumentationSection[]  // Updated prop type
+  sections: DocumentationSection[]
 }
 
-function SectionItem({ section, level = 0 }: { section: DocumentationSection, level?: number }) {
+function SectionItem({ section, level = 0, activeSectionSlug }: { 
+  section: DocumentationSection, 
+  level?: number,
+  activeSectionSlug?: string | null
+}) {
   const [isExpanded, setIsExpanded] = useState(false)
   const hasSubSections = section.subSections && section.subSections.length > 0
   const router = useRouter()
+  const isActive = activeSectionSlug === section.slug
 
   const handleClick = (e: React.MouseEvent) => {
     if (hasSubSections) {
@@ -48,7 +44,9 @@ function SectionItem({ section, level = 0 }: { section: DocumentationSection, le
   return (
     <div className="w-full">
       <div 
-        className={`flex items-center py-2 px-${level * 4} hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer`}
+        className={`flex items-center py-2 px-${level * 4} hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${
+          isActive ? 'bg-gray-100 dark:bg-gray-700 font-medium' : ''
+        }`}
         onClick={handleClick}
       >
         {hasSubSections && (
@@ -71,7 +69,8 @@ function SectionItem({ section, level = 0 }: { section: DocumentationSection, le
             <SectionItem 
               key={subSection.id} 
               section={subSection} 
-              level={level + 1} 
+              level={level + 1}
+              activeSectionSlug={activeSectionSlug}
             />
           ))}
         </div>
@@ -88,7 +87,11 @@ export default function DocsSidebar({ sections }: DocsSidebarProps) {
     <nav className="w-64 h-screen fixed left-0 top-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
       <div className="p-4">
         {sections.map(section => (
-          <SectionItem key={section.id} section={section} />
+          <SectionItem 
+            key={section.id} 
+            section={section} 
+            activeSectionSlug={currentSection}
+          />
         ))}
       </div>
     </nav>
