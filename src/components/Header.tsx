@@ -14,7 +14,7 @@ export default function Header() {
           <div className="w-48">
             <Link href="/" className="flex items-center space-x-2">
               <Image src="/logo.svg" alt="Logo" width={40} height={40} />
-              <span className="text-xl font-bold">VašeAplikace</span>
+              <span className="text-xl font-bold">Název</span>
             </Link>
           </div>
 

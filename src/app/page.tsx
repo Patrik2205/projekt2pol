@@ -17,10 +17,10 @@ export default function Home() {
           <div className="relative max-w-7xl mx-auto pt-32 pb-24">
             <div className="text-center">
               <h1 className="text-5xl sm:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-600">
-                VašeAplikace
+                Název
               </h1>
               <p className="mt-8 text-xl sm:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                Jednoduchý a výstižný slogan vaší aplikace. Například: Revoluční nástroj pro vývojáře.
+                Lorem Ipsum
               </p>
               <div className="mt-12 flex justify-center gap-6">
                 <Link
@@ -50,8 +50,8 @@ export default function Home() {
               <div className="w-full md:w-1/2 md:pl-8">
                 <h2 className="text-3xl font-bold mb-4">První hlavní funkce</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400">
-                  Detailní popis první funkce vaší aplikace. Zde můžete podrobně vysvětlit, 
-                  jak tato funkce pomáhá uživatelům a co ji dělá výjimečnou.
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In rutrum.
+                  Fusce tellus odio, dapibus id fermentum quis, suscipit id erat.
                 </p>
               </div>
             </div>
@@ -64,8 +64,8 @@ export default function Home() {
               <div className="w-full md:w-1/2 md:pr-8">
                 <h2 className="text-3xl font-bold mb-4">Druhá hlavní funkce</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400">
-                  Detailní popis druhé funkce vaší aplikace. Vysvětlete zde, jaké problémy 
-                  tato funkce řeší a jaké výhody přináší uživatelům.
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In rutrum.
+                  Fusce tellus odio, dapibus id fermentum quis, suscipit id erat.
                 </p>
               </div>
             </div>
@@ -78,8 +78,8 @@ export default function Home() {
               <div className="w-full md:w-1/2 md:pl-8">
                 <h2 className="text-3xl font-bold mb-4">Třetí hlavní funkce</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400">
-                  Detailní popis třetí funkce vaší aplikace. Popište zde jedinečné vlastnosti 
-                  této funkce a jak může být využita v praxi.
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In rutrum.
+                  Fusce tellus odio, dapibus id fermentum quis, suscipit id erat.
                 </p>
               </div>
             </div>

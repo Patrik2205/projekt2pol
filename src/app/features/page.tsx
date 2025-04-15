@@ -16,9 +16,8 @@ export default function Features() {
               <div className="text-center max-w-3xl mx-auto">
                 <h2 className="text-3xl font-bold mb-4">Process Automation</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400">
-                  Simplify your work with our automation tools. Set up custom workflows, 
-                  automatic updates, and let the application work for you. Save time and focus 
-                  on what really matters.
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In rutrum.
+                  Fusce tellus odio, dapibus id fermentum quis, suscipit id erat.
                 </p>
               </div>
             </div>
@@ -30,8 +29,8 @@ export default function Features() {
               <div className="text-center max-w-3xl mx-auto">
                 <h2 className="text-3xl font-bold mb-4">Advanced Data Analysis</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400">
-                  Gain deeper insights into your data with our analytics tools. Visualize trends, 
-                  identify patterns, and make informed decisions based on real data.
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In rutrum.
+                  Fusce tellus odio, dapibus id fermentum quis, suscipit id erat.
                 </p>
               </div>
             </div>
@@ -43,8 +42,8 @@ export default function Features() {
               <div className="text-center max-w-3xl mx-auto">
                 <h2 className="text-3xl font-bold mb-4">Team Collaboration</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400">
-                  Collaborate effectively with your team in real-time. Share documents, 
-                  communicate through integrated chat, and track project progress together.
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In rutrum.
+                  Fusce tellus odio, dapibus id fermentum quis, suscipit id erat.
                 </p>
               </div>
             </div>
@@ -56,8 +55,8 @@ export default function Features() {
               <div className="text-center max-w-3xl mx-auto">
                 <h2 className="text-3xl font-bold mb-4">Security First</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400">
-                  Your data is safe with us. We use state-of-the-art encryption technologies, 
-                  regular security audits, and a comprehensive data backup system.
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In rutrum.
+                  Fusce tellus odio, dapibus id fermentum quis, suscipit id erat.
                 </p>
               </div>
             </div>
