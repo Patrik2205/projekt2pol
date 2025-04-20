@@ -76,3 +76,5 @@ export const authOptions: AuthOptions = {
     }
   }
 }
+
+export const runtime = "nodejs"
