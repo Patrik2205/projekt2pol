@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 
@@ -76,19 +75,25 @@ export default function ForumPostPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      {/* Custom header for forum post detail */}
+      <header className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 shadow-md z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Link href="/forum" className="text-primary-600 hover:text-primary-700 flex items-center">
+                ← Back to Forum
+              </Link>
+            </div>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {isLoading ? 'Loading...' : post?.title ? `${post.title.substring(0, 40)}${post.title.length > 40 ? '...' : ''}` : 'Forum Post'}
+            </h1>
+            <div className="w-24"></div> {/* Spacer to balance the layout */}
+          </div>
+        </div>
+      </header>
 
       <main className="flex-grow pt-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
-            <Link 
-              href="/forum"
-              className="text-primary-600 hover:text-primary-700 flex items-center"
-            >
-              ← Back to Forum
-            </Link>
-          </div>
-
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-16"> {/* Added more bottom margin here */}
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>

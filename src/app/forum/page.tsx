@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import ForumSearch from '@/components/forum/ForumSearch'
+import ForumHeader from '@/components/forum/ForumHeader'
 import ForumPostCreation from '@/components/forum/ForumPostCreation'
 import ForumPostList from '@/components/forum/ForumPostList'
 
@@ -27,21 +26,15 @@ export default function ForumPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <ForumHeader onSearch={handleSearch} />
 
       <main className="flex-grow pt-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold mb-8">Forum</h1>
-
-          <div className="mb-6">
-            <ForumSearch onSearch={handleSearch} />
-          </div>
-
           <div className="mb-8">
             <ForumPostCreation onPostCreated={handlePostCreated} />
           </div>
 
-          <section>
+          <section className="mb-16"> {/* Added more bottom margin here */}
             <h2 className="text-2xl font-bold mb-4">Forum Posts</h2>
             <ForumPostList 
               key={refreshTrigger} 
