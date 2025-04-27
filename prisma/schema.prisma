@@ -86,8 +86,8 @@ enum PostType {
 model SoftwareVersion {
   id                  Int       @id @default(autoincrement())
   versionNumber      String
-  releasePost        Post      @relation(fields: [releasePostId], references: [id])
-  releasePostId      Int       @unique
+  releasePost        Post?      @relation(fields: [releasePostId], references: [id])
+  releasePostId      Int?       @unique
   downloadUrl        String
   checksum          String
   sizeBytes         BigInt

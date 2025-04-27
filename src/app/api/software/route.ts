@@ -1,39 +1,62 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/app/api/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/app/api/auth/auth.config"
+
+// Helper function to convert BigInt to string in an object
+function convertBigInts(obj: any): any {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+  
+  if (typeof obj === 'bigint') {
+    return obj.toString(); // Convert BigInt to string
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => convertBigInts(item));
+  }
+  
+  if (typeof obj === 'object') {
+    const result: any = {};
+    for (const key in obj) {
+      result[key] = convertBigInts(obj[key]);
+    }
+    return result;
+  }
+  
+  return obj;
+}
 
 export async function GET() {
   try {
     const versions = await prisma.softwareVersion.findMany({
-        include: {
-          releasePost: true,
-          downloads: true,
-          _count: {
-            select: {
-              downloads: true
-            }
+      include: {
+        releasePost: {
+          select: {
+            id: true,
+            title: true,
+            slug: true
           }
-        },
-        orderBy: {
-          releaseDate: 'desc'
         }
-    })    
-    return NextResponse.json(versions)
+      },
+      orderBy: {
+        releaseDate: 'desc'
+      }
+    });    
+    
+    // Convert BigInt values to strings before returning
+    const processedVersions = convertBigInts(versions);
+    
+    return NextResponse.json(processedVersions);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch versions' }, { status: 500 })
+    console.error('Error fetching software versions:', error);
+    return NextResponse.json({ error: 'Failed to fetch versions' }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
-
-    const json = await request.json()
-    const { versionNumber, downloadUrl, checksum, sizeBytes, minRequirements, changelog, releasePostId } = json
+    const json = await request.json();
+    const { versionNumber, downloadUrl, checksum, sizeBytes, minRequirements, changelog, releasePostId } = json;
 
     const version = await prisma.softwareVersion.create({
       data: {
@@ -46,7 +69,7 @@ export async function POST(request: Request) {
         releasePostId,
         isLatest: true
       }
-    })
+    });
 
     await prisma.softwareVersion.updateMany({
       where: {
@@ -56,10 +79,14 @@ export async function POST(request: Request) {
       data: {
         isLatest: false
       }
-    })
+    });
 
-    return NextResponse.json(version)
+    // Convert BigInt values before returning
+    const processedVersion = convertBigInts(version);
+    
+    return NextResponse.json(processedVersion);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create version' }, { status: 500 })
+    console.error('Error creating version:', error);
+    return NextResponse.json({ error: 'Failed to create version' }, { status: 500 });
   }
 }
