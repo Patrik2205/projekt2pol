@@ -24,6 +24,36 @@ model User {
   downloads     DownloadStatistic[]
   accounts      Account[]
   sessions      Session[]
+  forumPosts    ForumPost[]
+}
+
+model ForumPost {
+  id          Int            @id @default(autoincrement())
+  title       String
+  content     String
+  author      User           @relation(fields: [authorId], references: [id])
+  authorId    Int
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  views       Int            @default(0)
+  slug        String         @unique
+  tags        ForumPostTag[]
+}
+
+model ForumTag {
+  id          Int            @id @default(autoincrement())
+  name        String         @unique
+  slug        String         @unique
+  posts       ForumPostTag[]
+}
+
+model ForumPostTag {
+  post        ForumPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId      Int
+  tag         ForumTag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId       Int
+
+  @@id([postId, tagId])
 }
 
 model Account {

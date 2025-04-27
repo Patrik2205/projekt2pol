@@ -26,6 +26,14 @@ export default function Header() {
               Blog
             </Link>
             <Link 
+              href="/forum" 
+              className="text-sm hover:text-gray-600 dark:hover:text-gray-300"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Forum
+            </Link>
+            <Link 
               href="/docs" 
               className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 dark:text-gray-100"
               target="_blank"
@@ -67,4 +75,4 @@ export default function Header() {
       </nav>
     </header>
   )
-} 
+}
