@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import ForumComments from '@/components/forum/ForumComments'
 
 type ForumPost = {
   id: number
@@ -75,25 +77,19 @@ export default function ForumPostPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Custom header for forum post detail */}
-      <header className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 shadow-md z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Link href="/forum" className="text-primary-600 hover:text-primary-700 flex items-center">
-                ← Back to Forum
-              </Link>
-            </div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {isLoading ? 'Loading...' : post?.title ? `${post.title.substring(0, 40)}${post.title.length > 40 ? '...' : ''}` : 'Forum Post'}
-            </h1>
-            <div className="w-24"></div> {/* Spacer to balance the layout */}
-          </div>
-        </div>
-      </header>
+      <Header />
 
-      <main className="flex-grow pt-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-16"> {/* Added more bottom margin here */}
+      <main className="flex-grow pt-24 pb-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6">
+            <Link 
+              href="/forum"
+              className="text-primary-600 hover:text-primary-700 flex items-center"
+            >
+              ← Back to Forum
+            </Link>
+          </div>
+
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
@@ -104,55 +100,52 @@ export default function ForumPostPage() {
               <p>{error}</p>
             </div>
           ) : post ? (
-            <article className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-              <div className="p-6">
-                <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-                
-                <div className="flex flex-wrap justify-between items-center mb-4 text-sm text-gray-600 dark:text-gray-400">
-                  <div>
-                    <span>Posted by {post.author.username}</span>
-                    <span className="mx-2">•</span>
-                    <span>{formatDate(post.createdAt)}</span>
-                    {post.updatedAt !== post.createdAt && (
-                      <span className="ml-2">(Edited: {formatDate(post.updatedAt)})</span>
-                    )}
+            <>
+              <article className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+                <div className="p-6">
+                  <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+                  
+                  <div className="flex flex-wrap justify-between items-center mb-4 text-sm text-gray-600 dark:text-gray-400">
+                    <div>
+                      <span>Posted by {post.author.username}</span>
+                      <span className="mx-2">•</span>
+                      <span>{formatDate(post.createdAt)}</span>
+                      {post.updatedAt !== post.createdAt && (
+                        <span className="ml-2">(Edited: {formatDate(post.updatedAt)})</span>
+                      )}
+                    </div>
+                    <div className="mt-2 sm:mt-0">
+                      <span>Views: {post.views}</span>
+                    </div>
                   </div>
-                  <div className="mt-2 sm:mt-0">
-                    <span>Views: {post.views}</span>
+                  
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {post.tags.map(({ tag }) => (
+                        <span 
+                          key={tag.id} 
+                          className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 px-2 py-1 rounded-md text-sm"
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <div className="prose prose-lg dark:prose-invert max-w-none mt-6">
+                    <p className="whitespace-pre-line">{post.content}</p>
                   </div>
                 </div>
-                
-                {post.tags && post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {post.tags.map(({ tag }) => (
-                      <span 
-                        key={tag.id} 
-                        className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 px-2 py-1 rounded-md text-sm"
-                      >
-                        {tag.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                
-                <div className="prose prose-lg dark:prose-invert max-w-none mt-6">
-                  <p className="whitespace-pre-line">{post.content}</p>
-                </div>
-              </div>
-            </article>
+              </article>
+
+              {/* Comments Section - pass the post ID to the comments component */}
+              {post.id && <ForumComments forumPostId={post.id} />}
+            </>
           ) : (
             <div className="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg text-center">
               <p className="text-gray-600 dark:text-gray-400">Post not found</p>
             </div>
           )}
-
-          {/* Future enhancement: comments section */}
-          <div className="mt-8 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Comments</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-center">
-              Comments functionality coming soon!
-            </p>
-          </div>
         </div>
       </main>
 

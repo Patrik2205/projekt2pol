@@ -8,6 +8,11 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum CommentType {
+  postComment
+  forumComment
+}
+
 model User {
   id            Int       @id @default(autoincrement())
   username      String    @unique
@@ -38,6 +43,7 @@ model ForumPost {
   views       Int            @default(0)
   slug        String         @unique
   tags        ForumPostTag[]
+  comments    Comment[]
 }
 
 model ForumTag {
@@ -129,15 +135,22 @@ model SoftwareVersion {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  post      Post     @relation(fields: [postId], references: [id])
-  postId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isApproved Boolean @default(false)
+  id           Int         @id @default(autoincrement())
+  commentType  CommentType @default(postComment)
+  post         Post?       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId       Int?
+  forumPost    ForumPost?  @relation(fields: [forumPostId], references: [id], onDelete: Cascade)
+  forumPostId  Int?
+  user         User        @relation(fields: [userId], references: [id])
+  userId       Int
+  content      String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  isApproved   Boolean     @default(false)
+  parentId     Int?
+  parent       Comment?    @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies      Comment[]   @relation("CommentReplies")
+  isEdited     Boolean     @default(false)
 }
 
 model Tag {
