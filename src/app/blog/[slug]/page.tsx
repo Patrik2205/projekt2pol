@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import BlogComments from '@/components/BlogComments'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
@@ -127,7 +128,7 @@ export default function BlogPost() {
       <Header />
       
       <main className="flex-grow pt-16">
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
           <div className="w-full h-[400px] bg-gray-200 dark:bg-gray-700 overflow-hidden mb-8 rounded-bl-lg rounded-br-lg">
             <div className="w-full h-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20" />
           </div>
@@ -149,6 +150,11 @@ export default function BlogPost() {
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
         </article>
+        
+        {/* Add the BlogComments component */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          {post.id && <BlogComments postId={post.id} />}
+        </div>
       </main>
 
       <Footer />

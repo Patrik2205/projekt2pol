@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import DashboardSidebar from '@/components/DashboardSidebar'
+import SoftwareUpload from '@/components/admin/SoftwareUpload'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
@@ -15,6 +16,24 @@ type UserStats = {
 }
 
 type EditingField = 'username' | 'email' | 'firstName' | 'lastName' | 'password' | null
+
+type SoftwareVersion = {
+  id: number
+  versionNumber: string
+  sizeBytes: string | number
+  releaseDate: string
+  isLatest: boolean
+  changelog?: string
+  downloadUrl: string
+  downloadCount?: number
+}
+
+type DownloadStats = {
+  totalDownloads: number
+  downloadsThisMonth: number
+  downloadsThisWeek: number
+  downloadsToday: number
+}
 
 export default function Dashboard() {
   const { data: session, status } = useSession()
@@ -35,6 +54,11 @@ export default function Dashboard() {
     updatedAt: string
     slug: string
   }>>([])
+
+  // Software management state
+  const [softwareVersions, setSoftwareVersions] = useState<SoftwareVersion[]>([])
+  const [versionsLoading, setVersionsLoading] = useState(false)
+  const [downloadStats, setDownloadStats] = useState<DownloadStats | null>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -96,6 +120,126 @@ export default function Dashboard() {
     }
   }, [session])
 
+  // Software management useEffect
+  useEffect(() => {
+    if (session?.user && activeSection === 'software' && isAdmin) {
+      fetchVersions()
+      fetchDownloadStats()
+    }
+  }, [session, activeSection, isAdmin])
+
+  // Software management functions
+  const fetchVersions = async () => {
+    try {
+      setVersionsLoading(true)
+      const response = await fetch('/api/software')
+      if (response.ok) {
+        const data = await response.json()
+        setSoftwareVersions(data)
+      }
+    } catch (error) {
+      console.error('Error fetching versions:', error)
+    } finally {
+      setVersionsLoading(false)
+    }
+  }
+
+  const fetchDownloadStats = async () => {
+    try {
+      const response = await fetch('/api/software/stats')
+      if (response.ok) {
+        const data = await response.json()
+        setDownloadStats(data)
+      }
+    } catch (error) {
+      console.error('Error fetching download stats:', error)
+    }
+  }
+
+  const setVersionAsLatest = async (versionId: number) => {
+    try {
+      const response = await fetch(`/api/software/${versionId}/set-latest`, {
+        method: 'POST'
+      })
+      if (response.ok) {
+        fetchVersions()
+      }
+    } catch (error) {
+      console.error('Error setting version as latest:', error)
+    }
+  }
+
+  const deleteVersion = async (versionId: number) => {
+    if (!confirm('Are you sure you want to delete this version? This will also delete the file from S3. This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/software/${versionId}`, {
+        method: 'DELETE'
+      })
+      if (response.ok) {
+        fetchVersions()
+        fetchDownloadStats() // Refresh stats after deletion
+      }
+    } catch (error) {
+      console.error('Error deleting version:', error)
+    }
+  }
+
+  const downloadVersion = async (version: SoftwareVersion) => {
+    try {
+      // Use the same download API that the public download page uses
+      const response = await fetch('/api/software/download', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ versionId: version.id })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to initiate download');
+      }
+      
+      const data = await response.json();
+      
+      if (data.downloadUrl) {
+        // Open the download URL in a new tab
+        const link = document.createElement('a');
+        link.href = data.downloadUrl;
+        link.download = data.fileName || `${version.versionNumber}`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        
+        // Trigger the download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Show success notification
+        console.log(`Download started: ${data.fileName}`);
+      } else {
+        throw new Error('No download URL received');
+      }
+      
+    } catch (error) {
+      console.error('Error downloading version:', error);
+      alert(`Download failed: ${error instanceof Error ? error.message : 'Please try again later.'}`);
+    }
+  }
+  const formatFileSize = (bytes: string | number) => {
+    const numBytes = typeof bytes === 'string' ? parseFloat(bytes) : bytes
+    if (numBytes < 1024) return `${numBytes} B`
+    if (numBytes < 1024 * 1024) return `${(numBytes / 1024).toFixed(2)} KB`
+    if (numBytes < 1024 * 1024 * 1024) return `${(numBytes / (1024 * 1024)).toFixed(2)} MB`
+    return `${(numBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString()
+  }
+
   if (status === 'loading') {
     return <div>Loading...</div>
   }
@@ -108,6 +252,7 @@ export default function Dashboard() {
         <DashboardSidebar 
           activeSection={activeSection} 
           onSectionChange={setActiveSection}
+          isAdmin={isAdmin}
         />
         
         <main className="flex-grow p-8">
@@ -208,6 +353,133 @@ export default function Dashboard() {
                     <p className="text-gray-600 dark:text-gray-400">
                       Coming soon: View and manage comments on your posts
                     </p>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'software' && isAdmin && (
+              <>
+                <h1 className="text-3xl font-bold mb-8">Software Management</h1>
+                
+                <div className="space-y-8">
+                  {/* Upload New Version */}
+                  <SoftwareUpload 
+                    onUploadSuccess={() => {
+                      fetchVersions()
+                      fetchDownloadStats()
+                    }} 
+                  />
+
+                  {/* Existing Versions */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-2xl font-bold">Existing Versions</h2>
+                      <button
+                        onClick={fetchVersions}
+                        className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+                      >
+                        Refresh
+                      </button>
+                    </div>
+
+                    {versionsLoading ? (
+                      <div className="flex justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                      </div>
+                    ) : softwareVersions.length > 0 ? (
+                      <div className="space-y-4">
+                        {softwareVersions.map((version) => (
+                          <div key={version.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h3 className="text-lg font-semibold">Version {version.versionNumber}</h3>
+                                  {version.isLatest && (
+                                    <span className="px-2 py-1 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100 text-xs font-medium rounded-full">
+                                      Latest
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                  <div>
+                                    <span className="font-medium">Size:</span> {formatFileSize(version.sizeBytes)}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Released:</span> {formatDate(version.releaseDate)}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Storage:</span> AWS S3
+                                  </div>
+                                </div>
+                                {version.changelog && (
+                                  <div className="mt-2">
+                                    <span className="font-medium text-sm">Changelog:</span>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{version.changelog}</p>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex items-center space-x-2 ml-4">
+                                {!version.isLatest && (
+                                  <button
+                                    onClick={() => setVersionAsLatest(version.id)}
+                                    className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                  >
+                                    Set as Latest
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => downloadVersion(version)}
+                                  className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+                                >
+                                  Download
+                                </button>
+                                <button
+                                  onClick={() => deleteVersion(version.id)}
+                                  className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-gray-600 dark:text-gray-400">No software versions uploaded yet.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Download Statistics */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <h2 className="text-2xl font-bold mb-6">Download Statistics</h2>
+                    
+                    {downloadStats ? (
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-primary-600">{downloadStats.totalDownloads}</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">Total Downloads</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-green-600">{downloadStats.downloadsThisMonth}</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">This Month</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-blue-600">{downloadStats.downloadsThisWeek}</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">This Week</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-purple-600">{downloadStats.downloadsToday}</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">Today</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex justify-center py-4">
+                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-600"></div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </>
@@ -348,4 +620,4 @@ export default function Dashboard() {
       <Footer />
     </div>
   )
-} 
+}

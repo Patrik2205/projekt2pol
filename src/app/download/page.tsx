@@ -10,7 +10,7 @@ type SoftwareVersion = {
   versionNumber: string
   downloadUrl: string
   checksum: string
-  sizeBytes: number | string // Handle both number and string (from BigInt)
+  sizeBytes: number | string
   releaseDate: string
   isLatest: boolean
   minRequirements: string | null
@@ -27,7 +27,7 @@ export default function DownloadPage() {
   const [expandedVersions, setExpandedVersions] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [downloadStarted, setDownloadStarted] = useState<number | null>(null);
+  const [downloadingVersions, setDownloadingVersions] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     async function fetchVersions() {
@@ -71,16 +71,16 @@ export default function DownloadPage() {
     });
   }
 
-  const handleDownload = async (versionId: number) => {
+  const handleDownload = async (version: SoftwareVersion) => {
     try {
-      setDownloadStarted(versionId);
+      setDownloadingVersions(prev => new Set(prev).add(version.id));
       
       const response = await fetch('/api/software/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ versionId })
+        body: JSON.stringify({ versionId: version.id })
       });
       
       if (!response.ok) {
@@ -89,23 +89,76 @@ export default function DownloadPage() {
       
       const data = await response.json();
       
-      // Create an invisible anchor to trigger the download
-      const a = document.createElement('a');
-      a.href = data.downloadUrl;
-      a.download = `application-${versions.find(v => v.id === versionId)?.versionNumber}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      if (data.downloadUrl) {
+        if (data.method === 'presigned') {
+          window.open(data.downloadUrl, '_blank');
+        } else {
+          const link = document.createElement('a');
+          link.href = data.downloadUrl;
+          link.download = data.fileName || `${version.versionNumber}.exe`;
+          link.target = '_blank'; // Fallback
+          link.rel = 'noopener noreferrer';
+          
+          // Attempt download
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          // Fallback: if download didn't work, open in new tab
+          setTimeout(() => {
+            if (!document.hidden) {
+              window.open(data.downloadUrl, '_blank');
+            }
+          }, 1000);
+        }
+        
+        showDownloadSuccess(version.versionNumber, data.checksum);
+      } else {
+        throw new Error('No download URL received');
+      }
+      
     } catch (err) {
       console.error('Error initiating download:', err);
-      alert('Download failed. Please try again later.');
+      alert(`Download failed: ${err instanceof Error ? err.message : 'Please try again later.'}`);
     } finally {
-      setDownloadStarted(null);
+      setDownloadingVersions(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(version.id);
+        return newSet;
+      });
     }
   }
 
+  const showDownloadSuccess = (versionNumber: string, checksum: string) => {
+    // Create a temporary notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-md';
+    notification.innerHTML = `
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium">Download Started!</p>
+          <p class="text-xs mt-1">Version ${versionNumber}</p>
+          <p class="text-xs mt-1">Served via AWS S3</p>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 5000);
+  }
+
   const formatFileSize = (bytes: number | string) => {
-    // Convert bytes to a number if it's a string (from BigInt)
     const numBytes = typeof bytes === 'string' ? parseFloat(bytes) : bytes;
     
     if (numBytes < 1024) return `${numBytes} B`;
@@ -123,9 +176,25 @@ export default function DownloadPage() {
     });
   }
 
-  // Get the latest version
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // Show copied notification
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-blue-500 text-white p-2 rounded shadow-lg z-50';
+      notification.textContent = 'Checksum copied to clipboard!';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy to clipboard:', err);
+    });
+  }
+
   const latestVersion = versions.find(v => v.isLatest);
-  // Get all other versions sorted by release date
   const olderVersions = versions
     .filter(v => !v.isLatest)
     .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
@@ -168,19 +237,19 @@ export default function DownloadPage() {
                           </span>
                         </div>
                         <p className="text-gray-600 dark:text-gray-400 mt-2">
-                          Released on {formatDate(latestVersion.releaseDate)}
+                          Released on {formatDate(latestVersion.releaseDate)} • Powered by AWS S3
                         </p>
                       </div>
                       <button
-                        onClick={() => handleDownload(latestVersion.id)}
-                        disabled={downloadStarted === latestVersion.id}
+                        onClick={() => handleDownload(latestVersion)}
+                        disabled={downloadingVersions.has(latestVersion.id)}
                         className={`px-6 py-3 rounded-md text-white font-medium text-lg ${
-                          downloadStarted === latestVersion.id
+                          downloadingVersions.has(latestVersion.id)
                             ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
                             : 'bg-primary-600 hover:bg-primary-700'
                         }`}
                       >
-                        {downloadStarted === latestVersion.id ? 'Downloading...' : 'Download Now'}
+                        {downloadingVersions.has(latestVersion.id) ? 'Starting Download...' : 'Download Now'}
                       </button>
                     </div>
                     
@@ -191,7 +260,16 @@ export default function DownloadPage() {
                       </div>
                       <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Checksum (SHA-256)</h3>
-                        <p className="mt-1 text-sm font-mono overflow-hidden text-ellipsis">{latestVersion.checksum}</p>
+                        <div className="flex items-center mt-1">
+                          <p className="text-sm font-mono overflow-hidden text-ellipsis mr-2">{latestVersion.checksum}</p>
+                          <button
+                            onClick={() => copyToClipboard(latestVersion.checksum)}
+                            className="text-primary-600 hover:text-primary-500 text-xs"
+                            title="Copy to clipboard"
+                          >
+                            📋
+                          </button>
+                        </div>
                       </div>
                     </div>
                     
@@ -247,15 +325,15 @@ export default function DownloadPage() {
                           
                           <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => handleDownload(version.id)}
-                              disabled={downloadStarted === version.id}
+                              onClick={() => handleDownload(version)}
+                              disabled={downloadingVersions.has(version.id)}
                               className={`px-4 py-2 rounded-md text-white ${
-                                downloadStarted === version.id
+                                downloadingVersions.has(version.id)
                                   ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
                                   : 'bg-primary-600 hover:bg-primary-700'
                               }`}
                             >
-                              {downloadStarted === version.id ? 'Downloading...' : 'Download'}
+                              {downloadingVersions.has(version.id) ? 'Starting...' : 'Download'}
                             </button>
                             
                             <button
@@ -276,7 +354,16 @@ export default function DownloadPage() {
                             <div className="grid grid-cols-1 gap-4">
                               <div>
                                 <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Checksum (SHA-256)</h4>
-                                <p className="text-sm font-mono break-all">{version.checksum}</p>
+                                <div className="flex items-center">
+                                  <p className="text-sm font-mono break-all mr-2">{version.checksum}</p>
+                                  <button
+                                    onClick={() => copyToClipboard(version.checksum)}
+                                    className="text-primary-600 hover:text-primary-500 text-xs"
+                                    title="Copy to clipboard"
+                                  >
+                                    📋
+                                  </button>
+                                </div>
                               </div>
                               
                               {version.minRequirements && (
@@ -316,43 +403,44 @@ export default function DownloadPage() {
                 </div>
               </section>
 
-              {/* Additional information section */}
+              {/* Additional information section - enhanced for S3 */}
               <section className="mt-12 mb-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                 <div className="p-6">
                   <h2 className="text-xl font-bold mb-4">Download Information</h2>
                   
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-medium mb-1">Verifying Your Download</h3>
+                      <h3 className="font-medium mb-1">🚀 Global Distribution Network</h3>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">
-                        We provide SHA-256 checksums for all our downloads. To verify your download, compare the checksum of your downloaded file with the one displayed on this page.
+                        Files are hosted on Amazon Web Services (AWS) S3 with global CloudFront CDN distribution for maximum download speed worldwide.
                       </p>
                     </div>
                     
                     <div>
-                      <h3 className="font-medium mb-1">Installation Instructions</h3>
+                      <h3 className="font-medium mb-1">🔒 Secure Downloads</h3>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">
-                        After downloading, extract the ZIP file and run the installer. Follow the on-screen instructions to complete the installation.
+                        All downloads are served through secure, encrypted connections with enterprise-grade infrastructure.
                       </p>
-                      <Link 
-                        href="/docs?section=installation-guide"
-                        className="text-primary-600 hover:text-primary-500 text-sm"
-                      >
-                        View detailed installation guide →
-                      </Link>
+                    </div>
+                    
+                    <div>
+                      <h3 className="font-medium mb-1">✅ File Verification</h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        Each file includes a SHA-256 checksum for integrity verification. Click the 📋 icon to copy checksums to your clipboard.
+                      </p>
                     </div>
                     
                     <div>
                       <h3 className="font-medium mb-1">Need Help?</h3>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">
-                        If you encounter any issues with downloading or installing the software, please visit our documentation or contact our support team.
+                        If you encounter any issues, visit our documentation or contact support.
                       </p>
                       <div className="flex space-x-4 mt-2">
                         <Link 
-                          href="/docs?section=troubleshooting"
+                          href="/docs?section=installation-guide"
                           className="text-primary-600 hover:text-primary-500 text-sm"
                         >
-                          Troubleshooting guide →
+                          Installation guide →
                         </Link>
                         <Link 
                           href="/contact"

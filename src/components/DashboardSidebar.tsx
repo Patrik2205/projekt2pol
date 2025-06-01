@@ -1,16 +1,19 @@
 type DashboardSidebarProps = {
   activeSection: string
   onSectionChange: (section: string) => void
+  isAdmin?: boolean
 }
 
 export default function DashboardSidebar({ 
   activeSection, 
-  onSectionChange 
+  onSectionChange,
+  isAdmin = false
 }: DashboardSidebarProps) {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: '📊' },
     { id: 'posts', label: 'Posts', icon: '📝' },
     { id: 'comments', label: 'Comments', icon: '💬' },
+    ...(isAdmin ? [{ id: 'software', label: 'Software', icon: '💾' }] : []),
     { id: 'settings', label: 'Settings', icon: '⚙️' },
   ]
 
@@ -34,4 +37,4 @@ export default function DashboardSidebar({
       </nav>
     </aside>
   )
-} 
+}
