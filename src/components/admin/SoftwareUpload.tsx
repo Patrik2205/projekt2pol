@@ -227,7 +227,7 @@ export default function SoftwareUpload({ onUploadSuccess }: SoftwareUploadProps)
             value={formData.versionNumber}
             onChange={handleInputChange}
             placeholder="e.g., 1.0.0, 2.1.3-beta"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             disabled={isUploading}
           />
         </div>
@@ -244,7 +244,7 @@ export default function SoftwareUpload({ onUploadSuccess }: SoftwareUploadProps)
             onChange={handleInputChange}
             rows={3}
             placeholder="e.g., Windows 10 or later, 4GB RAM, 2GB free disk space"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             disabled={isUploading}
           />
         </div>
@@ -261,7 +261,7 @@ export default function SoftwareUpload({ onUploadSuccess }: SoftwareUploadProps)
             onChange={handleInputChange}
             rows={4}
             placeholder="What's new in this version..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             disabled={isUploading}
           />
         </div>
@@ -278,7 +278,7 @@ export default function SoftwareUpload({ onUploadSuccess }: SoftwareUploadProps)
             value={formData.releasePostId}
             onChange={handleInputChange}
             placeholder="Link to a blog post about this release"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             disabled={isUploading}
           />
         </div>

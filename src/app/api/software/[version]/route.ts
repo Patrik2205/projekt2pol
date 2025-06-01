@@ -107,12 +107,33 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ v
       return NextResponse.json({ error: 'Version not found' }, { status: 404 })
     }
 
-    // Delete from database first
-    await prisma.softwareVersion.delete({
-      where: { id: versionRecord.id }
-    })
+    // First, delete all related download statistics to avoid foreign key constraint violation
+    try {
+      await prisma.downloadStatistic.deleteMany({
+        where: { versionId: versionRecord.id }
+      })
+      console.log(`Deleted download statistics for version ${versionRecord.versionNumber}`)
+    } catch (statsError) {
+      console.error('Error deleting download statistics:', statsError)
+      return NextResponse.json({ 
+        error: 'Failed to delete related download statistics' 
+      }, { status: 500 })
+    }
 
-    // Try to delete from S3
+    // Then delete the software version from database
+    try {
+      await prisma.softwareVersion.delete({
+        where: { id: versionRecord.id }
+      })
+      console.log(`Deleted software version ${versionRecord.versionNumber} from database`)
+    } catch (dbError) {
+      console.error('Error deleting from database:', dbError)
+      return NextResponse.json({ 
+        error: 'Failed to delete software version from database' 
+      }, { status: 500 })
+    }
+
+    // Finally, try to delete from S3
     try {
       // Extract S3 key from download URL
       let s3Key: string
@@ -143,7 +164,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ v
 
     } catch (s3Error) {
       console.error('Error deleting from S3:', s3Error)
-      // Log the error but don't fail the request
+      // Log the error but don't fail the request since database cleanup was successful
       // The database record is already deleted, which is the most important part
     }
 
