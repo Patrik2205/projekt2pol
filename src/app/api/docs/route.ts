@@ -26,14 +26,19 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const json = await request.json()
-    const { title, content, parentSectionId, orderIndex } = json
+    const { title, content, parentSectionId } = json
+
+    const max = await prisma.documentationSection.aggregate({
+      _max: { orderIndex: true }
+    })
+    const nextIndex = (max._max.orderIndex ?? 0) + 1
 
     const doc = await prisma.documentationSection.create({
       data: {
         title,
         content,
         parentSectionId,
-        orderIndex,
+        orderIndex: nextIndex,
         slug: title.toLowerCase().replace(/\s+/g, '-')
       }
     })
