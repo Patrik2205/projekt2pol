@@ -6,6 +6,8 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import DashboardSidebar from '@/components/DashboardSidebar'
 import SoftwareUpload from '@/components/admin/SoftwareUpload'
+import BlogPostEditor from '@/components/admin/BlogPostEditor'
+import DocSectionEditor from '@/components/admin/DocSectionEditor'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
@@ -483,6 +485,18 @@ export default function Dashboard() {
                   </div>
                 </div>
               </>
+            )}
+
+            {activeSection === 'create-blog' && isAdmin && (
+              <div className="max-w-4xl mx-auto">
+                <BlogPostEditor onSuccess={() => setActiveSection('posts')} />
+              </div>
+            )}
+
+            {activeSection === 'create-docs' && isAdmin && (
+              <div className="max-w-4xl mx-auto">
+                <DocSectionEditor onSuccess={() => setActiveSection('overview')} />
+              </div>
             )}
 
             {activeSection === 'settings' && (
