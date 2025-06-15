@@ -1,14 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function DocSectionEditor({ onSuccess }: { onSuccess?: () => void }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [parentId, setParentId] = useState('')
-  const [orderIndex, setOrderIndex] = useState('0')
+  const [sections, setSections] = useState<any[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    const fetchSections = async () => {
+      try {
+        const res = await fetch('/api/docs')
+        if (res.ok) {
+          const data = await res.json()
+          const flat: any[] = []
+          data.forEach((sec: any) => {
+            flat.push({ id: sec.id, title: sec.title })
+            if (Array.isArray(sec.subSections)) {
+              sec.subSections.forEach((sub: any) =>
+                flat.push({ id: sub.id, title: `${sec.title} / ${sub.title}` })
+              )
+            }
+          })
+          setSections(flat)
+        }
+      } catch {
+        setSections([])
+      }
+    }
+
+    fetchSections()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,8 +53,7 @@ export default function DocSectionEditor({ onSuccess }: { onSuccess?: () => void
         body: JSON.stringify({
           title,
           content,
-          parentSectionId: parentId ? parseInt(parentId, 10) : null,
-          orderIndex: parseInt(orderIndex, 10) || 0
+          parentSectionId: parentId ? parseInt(parentId, 10) : null
         })
       })
 
@@ -41,7 +65,6 @@ export default function DocSectionEditor({ onSuccess }: { onSuccess?: () => void
       setTitle('')
       setContent('')
       setParentId('')
-      setOrderIndex('0')
       if (onSuccess) onSuccess()
     } catch (err) {
       console.error('Error creating documentation section:', err)
@@ -86,28 +109,21 @@ export default function DocSectionEditor({ onSuccess }: { onSuccess?: () => void
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Parent Section ID (optional)
+            Parent Section (optional)
           </label>
-          <input
-            type="text"
+          <select
             value={parentId}
             onChange={e => setParentId(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
-            placeholder="e.g. 1"
             disabled={isSubmitting}
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Order Index
-          </label>
-          <input
-            type="number"
-            value={orderIndex}
-            onChange={e => setOrderIndex(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
-            disabled={isSubmitting}
-          />
+          >
+            <option value="">None</option>
+            {sections.map(section => (
+              <option key={section.id} value={section.id}>
+                {section.title}
+              </option>
+            ))}
+          </select>
         </div>
         <button
           type="submit"
