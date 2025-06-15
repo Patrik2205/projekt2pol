@@ -5,12 +5,13 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import DashboardSidebar from '@/components/DashboardSidebar'
 import DocSectionEditor from '@/components/admin/DocSectionEditor'
 
 export default function NewDocSectionPage() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
-  const [allowed, setAllowed] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -19,7 +20,7 @@ export default function NewDocSectionPage() {
         if (!res.ok) throw new Error('failed')
         const data = await res.json()
         if (data.isAdmin) {
-          setAllowed(true)
+          setIsAdmin(true)
         } else {
           router.replace('/dashboard')
         }
@@ -35,18 +36,25 @@ export default function NewDocSectionPage() {
     }
   }, [status, router])
 
-  if (status === 'loading' || !allowed) {
+  if (status === 'loading' || !isAdmin) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>
   }
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow pt-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <DocSectionEditor onSuccess={() => router.push('/docs')} />
-        </div>
-      </main>
+      <div className="flex-grow flex pt-16">
+        <DashboardSidebar
+          activeSection="create-docs"
+          onSectionChange={() => {}}
+          isAdmin
+        />
+        <main className="flex-grow p-8">
+          <div className="max-w-4xl mx-auto">
+            <DocSectionEditor onSuccess={() => router.push('/docs')} />
+          </div>
+        </main>
+      </div>
       <Footer />
     </div>
   )

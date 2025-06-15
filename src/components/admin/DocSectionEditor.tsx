@@ -68,7 +68,7 @@ export default function DocSectionEditor({ onSuccess }: { onSuccess?: () => void
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
             disabled={isSubmitting}
           />
         </div>
@@ -80,7 +80,7 @@ export default function DocSectionEditor({ onSuccess }: { onSuccess?: () => void
             value={content}
             onChange={e => setContent(e.target.value)}
             rows={10}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
             disabled={isSubmitting}
           />
         </div>
@@ -92,7 +92,7 @@ export default function DocSectionEditor({ onSuccess }: { onSuccess?: () => void
             type="text"
             value={parentId}
             onChange={e => setParentId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
             placeholder="e.g. 1"
             disabled={isSubmitting}
           />
@@ -105,7 +105,7 @@ export default function DocSectionEditor({ onSuccess }: { onSuccess?: () => void
             type="number"
             value={orderIndex}
             onChange={e => setOrderIndex(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
             disabled={isSubmitting}
           />
         </div>

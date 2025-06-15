@@ -25,8 +25,8 @@ export default function DashboardSidebar({
     ...(isAdmin
       ? [
           { id: 'software', label: 'Software', icon: '💾' },
-          { id: 'blog-admin', label: 'Blog Admin', icon: '📝', href: '/dashboard/blog/new' },
-          { id: 'docs-admin', label: 'Docs Admin', icon: '📚', href: '/dashboard/docs/new' }
+          { id: 'create-blog', label: 'Create Blog', icon: '📝', href: '/dashboard/blog/new' },
+          { id: 'create-docs', label: 'Create Docs', icon: '📚', href: '/dashboard/docs/new' }
         ]
       : []),
     { id: 'settings', label: 'Settings', icon: '⚙️' },

@@ -1,0 +1,40 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/app/api/lib/prisma'
+
+export async function GET() {
+  try {
+    const tags = await prisma.tag.findMany({
+      orderBy: { name: 'asc' }
+    })
+    return NextResponse.json(tags)
+  } catch (error) {
+    console.error('Error fetching tags:', error)
+    return NextResponse.json({ error: 'Failed to fetch tags' }, { status: 500 })
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const json = await request.json()
+    const { name } = json
+
+    if (!name) {
+      return NextResponse.json({ error: 'Tag name is required' }, { status: 400 })
+    }
+
+    const existingTag = await prisma.tag.findFirst({
+      where: { name: { equals: name, mode: 'insensitive' } }
+    })
+
+    if (existingTag) {
+      return NextResponse.json(existingTag)
+    }
+
+    const slug = name.toLowerCase().replace(/\s+/g, '-')
+    const tag = await prisma.tag.create({ data: { name, slug } })
+    return NextResponse.json(tag)
+  } catch (error) {
+    console.error('Error creating tag:', error)
+    return NextResponse.json({ error: 'Failed to create tag' }, { status: 500 })
+  }
+}
